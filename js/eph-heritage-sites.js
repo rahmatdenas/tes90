@@ -293,7 +293,7 @@ function renderEventsInPanel(qid) {
   } else {
     // Skenario jika tidak ada data peristiwa sama sekali
     // Alih-alih hanya menghapus container, kita render tautan "Tambahkan data"
-    let tautanTambah = `<p><a href="${wikiUrl}" target="_blank" class="sunting-linktambah" title="Tambahkan peristiwa di Wikidata">Tambahkan data</a></p>`;
+    let tautanTambah = `<p><a href="${wikiUrl}" target="_blank" class="sunting-linktambah" title="Tambahkan peristiwa di Wikidata">Tambahkan data lainnya</a></p>`;
     
     container.insertAdjacentHTML('beforebegin', tautanTambah);
     container.remove();
@@ -644,12 +644,20 @@ function generateRecordDetails(qid) {
 
 let type = DESIGNATION_TYPES[designationQid];
 
-      let infoTahunHtml = '';
-      if (record.tahunBerdiri) {
-        infoTahunHtml = `<p>Didirikan: ${record.tahunBerdiri}</p>`;
-      } else {
-        infoTahunHtml = `<p>Didirikan: Data belum tersedia</p>`;
-      }
+ let infoTahunHtml = '';
+// Siapkan URL yang mengarah ke bagian "Tanggal didirikan" (P571)
+let wikiUrlTahun = `https://www.wikidata.org/wiki/${qid}#P571`; 
+
+if (record.tahunBerdiri) {
+  let tautanSunting = ` <a href="${wikiUrlTahun}" target="_blank" class="sunting-link" title="Sunting tahun berdiri di Wikidata">[Sunting]</a>`;
+  
+  infoTahunHtml = `<p>Didirikan: ${record.tahunBerdiri}${tautanSunting}</p>`;
+} else {
+  let tautanTambah = ` <a href="${wikiUrlTahun}" target="_blank" class="sunting-link" title="Tambahkan tahun berdiri di Wikidata">[Tambahkan]</a>`;
+  
+  // Membungkus teks "Data belum tersedia" dengan span untuk memberikan styling
+  infoTahunHtml = `<p>Didirikan: <span style="font-style: italic; color: #888;">Data belum tersedia</span>${tautanTambah}</p>`;
+}
 
       // --- LOGIKA LOKASI ANTI-DOBEL ---
       let induk = type.name; 
