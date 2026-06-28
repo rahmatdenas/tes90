@@ -148,8 +148,11 @@ function dapatkanNamaKlaster(inputTxt) {
   if (cek(['Q1641020'])) return 'Lontar';
   if (cek(['Q87167'])) return 'Naskah';
   if (cek(['Q11032', 'Q41298'])) return 'Media massa';
-  if (cek(['Q7944'])) return 'Gempa bumi';
-  if (cek(['Q8065', 'Q3839081', 'Q1190554'])) return 'Peristiwa';
+  if (cek(['Q7944', 'Q8070'])) return 'Gempa bumi dan tsunami';
+  if (cek(['Q8065', 'Q3839081'])) return 'Bencana lainnya';
+  if (cek(['Q8065', 'Q3839081'])) return 'Bencana lainnya';
+  if (cek(['Q1190554'])) return 'Peristiwa lainnya';
+  if (cek([''Q1323212', 'Q3199915', 'Q198', 'Q645883', 'Q831663', 'Q180684', 'Q178561', 'Q1261499'])) return 'Perang & konflik';
 
   // Kategori Alam / Kebudayaan Non-Bangunan
   if (cek(['Q34770'])) return 'Bahasa';
@@ -203,22 +206,21 @@ if (cek(['Q40080'])) return 'Pantai';
 function dapatkanPropertiWikidata(namaKlaster) {
   const pakaiP276 = [
     'Hidangan', 'Pakaian', 'Tari dan pertunjukan', 'Ritual dan upacara', 
-    'Budaya rakyat', 'Lukisan', 'Lontar', 'Naskah', 'Artefak', 'Gempa bumi', 'Peristiwa'
+    'Budaya rakyat', 'Lukisan', 'Lontar', 'Naskah', 'Artefak', 'Gempa bumi dan tsunami', 'Peristiwa lainnya', 'Perang & konflik', 'Bencana lainnya'
   ];
-  if (pakaiP276.includes(namaKlaster)) return 'P276'; 
-  
+  if (pakaiP276.includes(namaKlaster)) return 'P276';   
   if (['Bahasa'].includes(namaKlaster)) return 'P2341'; // Wilayah penutur asli
   if (['Tokoh'].includes(namaKlaster)) return 'P19'; // Tempat lahir
   if (['Publikasi', 'Media massa'].includes(namaKlaster)) return 'P291'; // Tempat terbit
   if (['Latar karya sastra'].includes(namaKlaster)) return 'P840'; // Latar naratif
   
-  // Default untuk Bangunan, Alam Fisik (Gunung, Pantai, dll), Wilayah, Gempa Bumi
+  // Default untuk semua
   return 'P131'; 
 }
 
 // Fungsi penentu Properti Tahun/Waktu
 function dapatkanPropertiTahun(namaKlaster) {
-  if (['Gempa bumi', 'Peristiwa'].includes(namaKlaster)) return 'P585'; // Tanggal kejadian (Point in time)
+  if (['Gempa bumi dan tsunami', 'Peristiwa lainnya', 'Perang & konflik', 'Bencana lainnya'].includes(namaKlaster)) return 'P585'; // Tanggal kejadian (Point in time)
   if (['Tokoh'].includes(namaKlaster)) return 'P569'; // Tanggal lahir
   if (['Publikasi', 'Media massa', 'Latar karya sastra'].includes(namaKlaster)) return 'P577'; // Tanggal terbit
   if (['Lukisan'].includes(namaKlaster)) return 'P571'; // Tanggal diciptakan
@@ -946,9 +948,9 @@ let isBersejarah = false;
   } else if (['Lontar', 'Naskah'].includes(currentNamaKlaster)) {
     prefixLokasi = 'Koleksi';
     prefixTahun = 'Disalin';
-  } else if (['Gempa bumi'].includes(currentNamaKlaster)) {
-    prefixLokasi = 'Tempat kejadian/terdampak';
-    prefixTahun = 'Pada';
+  } else if (['Gempa bumi dan tsunami', 'Bencana lainnya', 'Peristiwa lainnya', 'Perang & konflik'].includes(currentNamaKlaster)) {
+    prefixLokasi = 'Pusat/lokasi kejadian';
+    prefixTahun = 'Terjadi pada';
   } else if (['Menhir & dolmen'].includes(currentNamaKlaster)) {
     prefixLokasi = 'Terletak di';
     prefixTahun = 'Peninggalan';
