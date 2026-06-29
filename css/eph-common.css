@@ -358,7 +358,7 @@ optgroup option { padding-left: 10px; }
 
 #details h2 {
   clear: right;
-  padding-top: 20px;
+  padding-top: 15px;
   margin-top: 0;
   border-top: 1px solid #eaa;
   font-size: 12px;
@@ -397,7 +397,7 @@ optgroup option { padding-left: 10px; }
 #details figure {
   float: right;
   clear: right;
-  margin: 0 0 10px 10px;
+  margin: 0 0 15px 10px;
   padding: 0;
   width: 156px;
   font-size: 13px;
@@ -417,7 +417,7 @@ optgroup option { padding-left: 10px; }
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  margin-bottom: 15px;
+  margin-bottom: 17px;
 }
 
 #details figure > a {
@@ -522,7 +522,7 @@ optgroup option { padding-left: 10px; }
 /* --- Designations --- */
 #details .designations {
   margin: 0;
-  padding: 0 0 15px;
+  padding: 0 0 10px;
   overflow: hidden;
 }
 #details .designations li {
