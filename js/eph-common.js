@@ -415,7 +415,7 @@ function processHashChange() {
       if (fragment !== '') {
         // Jika sembarang ketik URL atau menekan tab Hasil sebelum data ditarik
         if (!isIndexPage) window.location.hash = 'hasil'; // Paksa arahkan ke #hasil
-        document.title = 'Hasil – ' + BASE_TITLE;
+document.title = `${currentNamaKlaster} di ${currentNamaWilayah} – ${BASE_TITLE}`;
         displayPanelContent('index');
 
         let indexList = document.getElementById('index-list');          
