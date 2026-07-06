@@ -80,6 +80,30 @@ WHERE {
   BIND(SUBSTR(STR(?p), 32) AS ?PQ) .
   BIND(SUBSTR(STR(?l), 32) AS ?LQ)
   SERVICE wikibase:label { bd:serviceParam wikibase:language "id". }
+}`,
+'luar_negeri': `SELECT DISTINCT ?SQ ?sLabel ?PQ ?pLabel ?LQ ?lLabel ?tM ?tP
+WHERE {
+  {
+    SELECT DISTINCT ?s ?p ?l WHERE {
+      VALUES ?j { <PLACEHOLDER_JENIS> }
+      BIND(<PLACEHOLDER_NEGARA> AS ?p)
+      ?s wdt:P31 ?j ;
+         wdt:<PLACEHOLDER_PROP_LOKASI> ?l .
+      ?l wdt:P131* ?p .
+    }
+    ORDER BY ?s ?p ?l
+    <PLACEHOLDER_LIMIT_OFFSET>
+  }
+  OPTIONAL {
+    ?s p:<PLACEHOLDER_PROP_TAHUN> ?iS .
+    ?iS psv:<PLACEHOLDER_PROP_TAHUN> ?iN .
+    ?iN wikibase:timeValue ?tM ;
+        wikibase:timePrecision ?tP .
+  }
+  BIND(SUBSTR(STR(?s), 32) AS ?SQ) .
+  BIND(SUBSTR(STR(?p), 32) AS ?PQ) .
+  BIND(SUBSTR(STR(?l), 32) AS ?LQ)
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "id". }
 }`
 };
 
