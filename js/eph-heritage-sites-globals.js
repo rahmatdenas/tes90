@@ -1,7 +1,5 @@
 'use strict';
-
 const BASE_TITLE = 'WikiJelajah';
-
 const KUMPULAN_KUERI_0 = {
 'universal': `SELECT DISTINCT ?SQ ?sLabel ?PQ ?pLabel ?LQ ?lLabel ?tM ?tP
 WHERE {
