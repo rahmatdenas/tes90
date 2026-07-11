@@ -400,7 +400,7 @@ async function queryWdqsPaginated(queryTemplate, processEachResult, postprocessC
     } else {
        // Masih ada halaman berikutnya
        if (progressText) {
-         progressText.textContent = `Selesai menarik ${totalDataTerkumpul} data. Masih menarik ribuan data lagi...`;
+         progressText.textContent = `Selesai menarik ${totalDataTerkumpul} data. Masih terdapat ribuan data lagi...`;
        }
     }
 
