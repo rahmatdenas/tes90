@@ -102,12 +102,14 @@ populateProvinceTypesData()
          `;
        }
   
-  loadingTimeoutToken = setTimeout(() => {
-    let loadingDesc = document.getElementById('loading-desc');
-    if (loadingDesc && isFetching) {
-       loadingDesc.innerHTML = `Data yang ditarik terlalu banyak. Harap menunggu, 3-5 menit...`;
-    }
-  }, 1000);
+loadingTimeoutToken = setTimeout(() => {
+  // Ganti targetnya ke elemen yang memang Anda gunakan untuk status loading
+  let loadingDesc = document.querySelector('#index-list p'); 
+  
+  if (loadingDesc && isFetching) {
+   loadingDesc.innerHTML = `Data yang ditarik terlalu banyak. Harap menunggu, 3-5 menit...`;
+  }
+}, 5000);
        
        console.error("Data utama gagal dimuat. Cek koneksi atau server Wikidata.", error);
     }); 
