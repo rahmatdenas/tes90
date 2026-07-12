@@ -805,24 +805,48 @@ function populateProvinceIndex() {
 function populateMapAndIndex() {
   let listIndex = document.getElementById('index-list');
   let mapMarkers = [];
+  
   Object.entries(Records).forEach(entry => {
     let qid = entry[0], record = entry[1];
+    
     if (!record.isCompound && record.lat && record.lon) {
       let mapMarker = L.marker(
         [record.lat, record.lon],
-        { icon: L.ExtraMarkers.icon({ icon: '', markerColor : 'orange-dark' }) },
+        { icon: L.ExtraMarkers.icon({ icon: '', markerColor : 'orange-dark' }) }
       );
       record.mapMarker = mapMarker;
-mapMarker.bindPopup(record.title, { 
-  closeButton: false,
-  maxWidth: 200 
-});
+      
+      mapMarker.bindPopup(record.title, { 
+        closeButton: false,
+        maxWidth: 200 
+      });
+
+      // =======================================================
+      // +++ TAMBAHAN BARU: LOGIKA KLIK KEDUA (KHUSUS MOBILE) +++
+      // =======================================================
+      mapMarker.on('click', function() {
+        // Cek apakah hash URL saat ini sama persis dengan Q-ID marker ini.
+        // Jika sama, ini pasti klik kedua (atau klik saat popup sedang aktif).
+        if (window.location.hash === '#' + qid) {
+          
+          // 1. Tarik panel mobile ke atas (jika fungsi ini ada di JS utama Anda)
+          if (typeof window.setMobilePanelExpanded === 'function') {
+            window.setMobilePanelExpanded(true);
+          }
+          
+          // 2. Cegah sifat asli Leaflet yang menutup popup jika diklik ganda
+          this.openPopup(); 
+        }
+      });
+      // =======================================================
+
       let popup = mapMarker.getPopup();
       popup._qid = qid;
       record.popup = popup;
       mapMarkers.push(mapMarker);
     }
-let li = document.createElement('li');
+    
+    let li = document.createElement('li');
     let a = document.createElement('a');
     a.href = '#' + qid;
     
@@ -833,6 +857,7 @@ let li = document.createElement('li');
     li.appendChild(a);
     record.indexLi = li;
   });
+  
   populateProvinceIndexNodes(); 
   generateFilterSelect();
 }
