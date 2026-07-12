@@ -306,7 +306,7 @@ function populateProvinceTypesData() {
         record.title = ('sLabel' in result && result.sLabel.value) ? result.sLabel.value : '[ERROR: No title]';
 
         let provQid = result.PQ ? result.PQ.value : 'Q_UNKNOWN';
-        let provLabel = result.pLabel ? result.pLabel.value : 'Tidak dalam Provinsi';
+        let provLabel = result.pLabel ? result.pLabel.value : 'Wilayah Lainnya/Tidak Spesifik';
 
         if (!(provQid in ProvinceIndex)) {
           ProvinceIndex[provQid] = new ProvinceIndexEntry();
@@ -878,8 +878,8 @@ function generateFilterSelect() {
     .filter(qid => qid !== 'all')
     .map(qid => { return { qid: qid, name: ProvinceIndex[qid].name, total: ProvinceIndex[qid].total }; })
     .sort((a, b) => {
-      if (a.name === 'Tidak dalam Provinsi') return 1;
-      if (b.name === 'Tidak dalam Provinsi') return -1;
+      if (a.name === 'Wilayah Lainnya/Tidak Spesifik') return 1;
+      if (b.name === 'Wilayah Lainnya/Tidak Spesifik') return -1;
       return a.name.localeCompare(b.name);
     })
     .forEach(prov => {
@@ -1107,11 +1107,11 @@ designationsHtml += '<ul class="designations">';
   let arrayProvinsi = Object.values(record.designations);
   
   // Deteksi jika item ini tidak memiliki provinsi yang terdata
-  let isTidakSpesifik = arrayProvinsi.includes('Tidak dalam Provinsi') || arrayProvinsi.length === 0;
+  let isTidakSpesifik = arrayProvinsi.includes('Wilayah Lainnya/Tidak Spesifik') || arrayProvinsi.length === 0;
 
   let spesifik = record.lokasiSpesifik; 
   // Bersihkan nilai anomali dari Wikidata
-if (spesifik === 'Tidak dalam Provinsi') spesifik = null;
+if (spesifik === 'Wilayah Lainnya/Tidak Spesifik') spesifik = null;
 
   let namaLokasi = '';
 
@@ -1122,12 +1122,12 @@ if (spesifik === 'Tidak dalam Provinsi') spesifik = null;
       namaLokasi = spesifik;
     } else {
       // Jika lokasi spesifik juga kosong, gunakan teks pengganti baru
-      namaLokasi = 'Wilayah Lainnya/Tidak Spesifik';
+      namaLokasi = 'Belum ada data';
     }
   } else {
     // KONDISI 2: PROVINSI DIKETAHUI (Misal: Jawa Barat, Bali)
     // Saring agar teks 'Tidak dalam Provinsi' tidak ikut tercetak jika ada provinsi ganda
-    let arrayProvinsiBersih = arrayProvinsi.filter(p => p !== 'Tidak dalam Provinsi');
+    let arrayProvinsiBersih = arrayProvinsi.filter(p => p !== 'Wilayah Lainnya/Tidak Spesifik');
     let teksDaftarProvinsi = arrayProvinsiBersih.join(', '); 
     
     // Gabungkan dengan lokasi spesifik jika ada dan namanya tidak sama persis dengan provinsi
