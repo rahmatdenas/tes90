@@ -180,7 +180,7 @@ function resetApp() {
   // KUNCI PERBAIKAN: BERSIHKAN "HANTU KOSMETIK" DI TAMPILAN
   // =========================================================
 
-  // A. Kembalikan Menu Wilayah ke status kosong
+ // A. Kembalikan Menu Wilayah ke status kosong
   let selectRegion = document.getElementById('filter-region');
   if (selectRegion) {
     selectRegion.innerHTML = '<option value="all">Semua Wilayah</option>';
@@ -190,7 +190,7 @@ function resetApp() {
   // B. Kembalikan Menu Usia ke default
   let selectKombinasi = document.getElementById('filter-sort-kombinasi');
   if (selectKombinasi) {
-    selectKombinasi.value = 'default'; // Cukup reset nilainya saja di sini
+    selectKombinasi.value = 'default';
   }
   
   // C. Bersihkan Kotak Pencarian dan Angka Hasil
@@ -198,35 +198,32 @@ function resetApp() {
   if (searchInput) {
     searchInput.value = '';
     searchInput.placeholder = 'Belum ada hasil...';
-    searchInput.dispatchEvent(new Event('input', { bubbles: true })); // Pelatuk reset real-time
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
-  // D. Matikan semua tombol filter (Gambar/Artikel), dan nyalakan tombol "Semua Hasil"
+  // D. Tangkap tombol bos (btnAll) cukup SEKALI saja di sini
   let btnAll = document.getElementById('btn-all');
-  if (btnAll) {
-    btnAll.classList.add('active');
-    btnAll.textContent = 'Semua Hasil';
-  }
+  
   document.querySelectorAll('.feat-btn:not(#btn-all)').forEach(b => {
     b.classList.remove('active');
   });
 
-// E. Kembalikan teks asli pada tombol dan KUNCI tombolnya
+  // E. Kembalikan teks asli pada tombol dan KUNCI SEMUANYA untuk Landing
   let btnImg = document.getElementById('btn-image') || document.querySelector('[data-filter="image"]');
   let btnArt = document.getElementById('btn-article') || document.querySelector('[data-filter="article"]');
-  let btnAll = document.getElementById('btn-all'); // Tangkap tombol bosnya
   
   if (btnImg) { 
     btnImg.textContent = 'Memiliki Gambar';
-    btnImg.classList.add('disabled'); // Suntikkan efek terkunci saat di beranda
+    btnImg.classList.add('disabled'); 
   }
   if (btnArt) { 
     btnArt.textContent = 'Memiliki Artikel';
-    btnArt.classList.add('disabled'); // Suntikkan efek terkunci saat di beranda
+    btnArt.classList.add('disabled'); 
   }
   if (btnAll) {
-    btnAll.classList.add('disabled');   // Kunci kembali saat mendarat di Beranda
-    btnAll.classList.remove('active');  // Matikan nyala lampunya
+    btnAll.textContent = 'Semua Hasil';
+    btnAll.classList.add('disabled');   // Kunci di awal
+    btnAll.classList.remove('active');  // Matikan lampu active-nya
   }
 
   // F. Reset memori variabel filter di JS 3 agar tidak menyisakan status
