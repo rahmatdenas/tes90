@@ -211,11 +211,18 @@ function resetApp() {
     b.classList.remove('active');
   });
 
-  // E. Kembalikan teks asli pada tombol (jika sebelumnya ada angka jumlahnya)
+// E. Kembalikan teks asli pada tombol dan KUNCI tombolnya
   let btnImg = document.getElementById('btn-image') || document.querySelector('[data-filter="image"]');
   let btnArt = document.getElementById('btn-article') || document.querySelector('[data-filter="article"]');
-  if (btnImg) btnImg.textContent = 'Memiliki Gambar';
-  if (btnArt) btnArt.textContent = 'Memiliki Artikel';
+  
+  if (btnImg) { 
+    btnImg.textContent = 'Memiliki Gambar';
+    btnImg.classList.add('disabled'); // Suntikkan efek terkunci saat di beranda
+  }
+  if (btnArt) { 
+    btnArt.textContent = 'Memiliki Artikel';
+    btnArt.classList.add('disabled'); // Suntikkan efek terkunci saat di beranda
+  }
 
   // F. Reset memori variabel filter di JS 3 agar tidak menyisakan status
   if (typeof activeFeatures !== 'undefined' && activeFeatures.clear) activeFeatures.clear();
