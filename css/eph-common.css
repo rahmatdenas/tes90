@@ -51,8 +51,12 @@ body {
   flex-direction: column;
   flex: 0 1 500px;
   background: #822;
-   height: 100%
+   height: 100%;
 }
+   .panel-content, 
+  #index-list {
+        padding-bottom:32px;
+    }
 
 #navigasi-utama {
     position: fixed !important;
