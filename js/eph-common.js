@@ -882,95 +882,45 @@ function parseDate(result, keyName) {
 // ============================================================
 // FITUR RADAR GPS: MENCARI SITUS DALAM RADIUS TERTENTU
 // ============================================================
-function jalankanFilterGPS(radiusKm = 10) {
-  let selectRegion = document.getElementById('filter-region');
-
-  // 1. Cek apakah hape/browser mendukung GPS
+function jalankanFilterGPS(selectElem) {
   if (!navigator.geolocation) {
     alert("Maaf, peramban Anda tidak mendukung fitur lokasi.");
-    batalkanFilterGPS(selectRegion);
+    batalkanFilterGPS(selectElem);
     return;
   }
 
-  // 2. Beri efek UX loading pada teks dropdown agar pengguna tahu sistem sedang bekerja
-  let teksAsli = selectRegion.options[selectRegion.selectedIndex].text;
-  selectRegion.options[selectRegion.selectedIndex].text = "⏳ Mencari satelit GPS...";
+  selectElem.options[selectElem.selectedIndex].text = "⏳ Mencari satelit GPS...";
 
-  // 3. Panggil API Geolocation HTML5
   navigator.geolocation.getCurrentPosition(
     function(position) {
-      // BERHASIL MENDAPATKAN KOORDINAT
-      let userLat = position.coords.latitude;
-      let userLon = position.coords.longitude;
+      // 1. Simpan koordinat ke variabel global
+      userLocation = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+      };
       
-      // Kembalikan teks dropdown ke normal
-      selectRegion.options[selectRegion.selectedIndex].text = "📍 Sekitar Anda (Radius 10 km)";
-
-      let radiusMeter = radiusKm * 1000;
-      let hasilTerdekat = [];
-
-      // 4. Hitung Jarak Menggunakan Otak Leaflet (Map.distance)
-      // Kita putar (loop) semua data yang sudah ditarik di memori (Records)
-      for (let qid in Records) {
-        let record = Records[qid];
-        
-        // Pastikan record memiliki koordinat Lintang dan Bujur
-        if (record.lat && record.lon) {
-          // Menghitung jarak dari pengguna ke situs (dalam satuan meter)
-          let jarak = Map.distance([userLat, userLon], [record.lat, record.lon]);
-          
-          if (jarak <= radiusMeter) {
-            // Opsional: Simpan data jarak ke dalam record agar nanti bisa ditampilkan di UI
-            record.jarakDariUser = (jarak / 1000).toFixed(1); // Ubah ke km dengan 1 desimal
-            
-            hasilTerdekat.push(record);
-          }
-        }
-      }
-
-      // 5. Cek jika ternyata tidak ada situs di sekitar pengguna
-      if (hasilTerdekat.length === 0) {
-        alert(`Tidak ada situs yang ditemukan dalam radius ${radiusKm} km dari lokasi Anda saat ini.`);
-        batalkanFilterGPS(selectRegion);
-        return;
-      }
-
-      // 6. LEMPAR HASIL KE FUNGSI RENDER ANDA
-      // Update variabel global penyimpan hasil filter
-      currentFilteredRecords = hasilTerdekat;
+      // 2. Kembalikan teks dan setel status filter
+      selectElem.options[selectElem.selectedIndex].text = "📍 Sekitar Anda (Radius 10 km)";
+      currentRegionFilter = 'terdekat';
       
-      // =======================================================
-      // KUNCI INTEGRASI: Panggil fungsi render Anda di sini!
-      // (Ganti baris di bawah ini dengan nama fungsi di kodemu yang 
-      // bertugas menggambar ulang daftar di index-list dan marker di Peta)
-      // =======================================================
-      console.log(`Ditemukan ${hasilTerdekat.length} situs di dekat Anda!`);
-      // contoh: renderListDanPeta(); 
-
+      // 3. SEKARANG baru panggil saringan master Anda!
+      applyIntersectionFilter(); 
     },
     function(error) {
-      // GAGAL/DITOLAK PENGGUNA
-      if (error.code === error.PERMISSION_DENIED) {
-        alert("Akses lokasi ditolak. Izinkan GPS di pengaturan peramban Anda untuk menggunakan fitur ini.");
-      } else {
-        alert("Sinyal GPS lemah atau tidak dapat menemukan lokasi Anda.");
-      }
-      batalkanFilterGPS(selectRegion);
+      alert("Akses lokasi gagal atau ditolak. Pastikan GPS HP Anda menyala.");
+      batalkanFilterGPS(selectElem);
     },
-    // Konfigurasi satelit: Akurasi tinggi, timeout 10 detik, jangan pakai cache lokasi lama
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
   );
 }
 
-// Fungsi darurat untuk mengembalikan dropdown ke opsi "Semua" jika GPS gagal
 function batalkanFilterGPS(selectElem) {
   selectElem.value = 'all';
-  // Kembalikan teks asli barangkali nyangkut di "Mencari satelit..."
-  let opsiTerdekat = Array.from(selectElem.options).find(opt => opt.value === 'terdekat');
-  if (opsiTerdekat) opsiTerdekat.text = "📍 Sekitar Anda (Radius 10 km)";
-  
-  // Pancing event change agar UI dan peta mereset ke kondisi 'all'
-  selectElem.dispatchEvent(new Event('change'));
+  currentRegionFilter = 'all';
+  userLocation = null;
+  let opsi = Array.from(selectElem.options).find(opt => opt.value === 'terdekat');
+  if (opsi) opsi.text = "📍 Sekitar Anda (Radius 10 km)";
+  applyIntersectionFilter();
 }
 
 function updateNavigationUI(fragment) {
