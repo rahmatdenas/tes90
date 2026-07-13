@@ -889,7 +889,7 @@ function jalankanFilterGPS(selectElem) {
     return;
   }
 
-  selectElem.options[selectElem.selectedIndex].text = "⏳ Mencari satelit GPS...";
+  selectElem.options[selectElem.selectedIndex].text = "Mencari satelit GPS...";
 
   navigator.geolocation.getCurrentPosition(
     function(position) {
@@ -900,7 +900,7 @@ function jalankanFilterGPS(selectElem) {
       };
       
       // 2. Kembalikan teks dan setel status filter
-      selectElem.options[selectElem.selectedIndex].text = "📍 Sekitar Anda (Radius 10 km)";
+      selectElem.options[selectElem.selectedIndex].text = "Sekitar Anda (10 km)";
       currentRegionFilter = 'terdekat';
       
       // 3. SEKARANG baru panggil saringan master Anda!
