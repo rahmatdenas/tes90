@@ -963,6 +963,7 @@ var currentRegionFilter = 'all';
 var currentUsiaFilter = 'all';
 var activeFeatures = new Set(); 
 var currentSearchQuery = '';
+var userLocation = null;
 
 function generateFilterSelect() {
   currentRegionFilter = 'all';
@@ -991,6 +992,7 @@ function generateFilterSelect() {
   let selectRegion = document.getElementById('filter-region');
 
   selectRegion.innerHTML = `<option value="all">Semua Wilayah – ${ProvinceIndex['all'].total}</option>`;
+  selectRegion.innerHTML += `<option value="terdekat">Sekitar Anda (10 km)</option>`;
   
   Object.keys(ProvinceIndex)
     .filter(qid => qid !== 'all')
@@ -1011,9 +1013,16 @@ function generateFilterSelect() {
   
   if (!isFilterEventAttached) {
     
-    selectRegion.addEventListener('change', function() {
-      currentRegionFilter = this.value;
-      applyIntersectionFilter();
+selectRegion.addEventListener('change', function() {
+      if (this.value === 'terdekat') {
+        // Jangan langsung filter, cari satelit dulu!
+        jalankanFilterGPS(this);
+      } else {
+        // Filter normal
+        currentRegionFilter = this.value;
+        userLocation = null; // Hapus memori GPS
+        applyIntersectionFilter();
+      }
     });
 
     if (selectKombinasi) {
@@ -1036,6 +1045,7 @@ function generateFilterSelect() {
 
     if (btnAll) {
       btnAll.addEventListener('click', function() {
+        userLocation = null;
         activeFeatures.clear();
         btnAll.classList.add('active');
         document.querySelectorAll('.feat-btn:not(#btn-all)').forEach(b => b.classList.remove('active'));
@@ -1133,8 +1143,30 @@ function applyIntersectionFilter(preventZoom = false) {
     }
   }
 
-  let validRecords = Object.values(Records).filter(record => {
-    let matchRegion = (currentRegionFilter === 'all' || record.areaTags.has(currentRegionFilter));
+let validRecords = Object.values(Records).filter(record => {
+    
+    // --- GANTI BAGIAN MATCH REGION MENJADI SEPERTI INI ---
+    let matchRegion = false;
+    
+    if (currentRegionFilter === 'all') {
+      matchRegion = true;
+    } 
+    else if (currentRegionFilter === 'terdekat') {
+      // Logika GPS: Hitung jarak dari userLocation ke koordinat bangunan
+      if (userLocation && record.lat && record.lon) {
+        let jarakMeter = Map.distance([userLocation.lat, userLocation.lon], [record.lat, record.lon]);
+        if (jarakMeter <= 10000) { // 10.000 meter = 10 km
+          record.jarakDariUser = (jarakMeter / 1000).toFixed(1); // Simpan km-nya
+          matchRegion = true;
+        }
+      }
+    } 
+    else {
+      // Filter provinsi normal
+      matchRegion = record.areaTags.has(currentRegionFilter);
+    }
+    // -----------------------------------------------------
+
     let matchFeature = true;
     
     if (activeFeatures.size > 0) {
