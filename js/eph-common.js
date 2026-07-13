@@ -651,10 +651,6 @@ function activateMapMarker(qid) {
   let record = Records[qid];
   if (!record.mapMarker) return; 
 
-  // +++ ANTI-KEDIP +++
-  // Kalau popup marker ini sudah terbuka (misalnya baru saja dibuka lewat
-  // klik marker itu sendiri, lalu memicu hashchange balik ke sini),
-  // tidak perlu tutup lalu buka lagi.
   if (record.popup && record.popup.isOpen()) {
     return;
   }
@@ -673,6 +669,10 @@ function activateMapMarker(qid) {
     if (countSameLocation > 60) {
       Map.setView([record.lat, record.lon], TILE_LAYER_MAX_ZOOM);
       setTimeout(() => {
+        // --- KUNCI PENANGKAL 1 ---
+        // Kalau URL sudah bukan QID ini lagi (misal user udah klik Hasil), batalkan efeknya!
+        if (window.location.hash !== '#' + qid) return;
+        
         let visibleParent = Cluster.getVisibleParent(record.mapMarker);
         if (visibleParent && visibleParent._icon) {
           visibleParent._icon.classList.add('cluster-efek-denyut');
@@ -682,11 +682,14 @@ function activateMapMarker(qid) {
         }
       }, 350);
     } else {
-      // Pastikan marker ada di dalam klaster sebelum disuruh mekar
       if (Cluster.hasLayer(record.mapMarker)) {
         Cluster.zoomToShowLayer(
           record.mapMarker,
           function() {
+            // --- KUNCI PENANGKAL 2 ---
+            // Kalau animasi mekar selesai tapi user udah balik ke Index, JANGAN buka popup!
+            if (window.location.hash !== '#' + qid) return;
+
             if (!record.popup.isOpen()) record.mapMarker.openPopup();
           }
         );
