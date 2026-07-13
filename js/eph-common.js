@@ -47,8 +47,10 @@ function init() {
 Map.on('popupopen', function(e) { 
   e.popup._sudahDiupdate = false;
     let qid = e.popup._qid;
+  if (window.location.hash !== '#' + qid) {
+    window.location.hash = qid; 
+  }
     let record = Records[qid];
-    displayRecordDetails(qid);
     // 2. INJEKSI GAMBAR POPUP
     if (record.imageFilename && !e.popup._hasImage) {
       
