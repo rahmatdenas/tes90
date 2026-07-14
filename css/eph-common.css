@@ -184,7 +184,7 @@ padding: 18px 20px;
 }
 
 #submenu-atas li a:hover {
-    background: #a22;
+    background: #6f0909;
    color: #fff;
 }
 
@@ -198,7 +198,12 @@ padding: 18px 20px;
   }
 }
 .kelas-submenu-mu  li {
-    background: #660303e3;
+    background: #f3f0f0eb;
+    /* color: black ; */
+}
+
+.kelas-submenu-mu  li a {
+    color: #2e2c2c;
 }
 /* 1. Pengaturan dasar untuk semua <li> */
 .kelas-submenu-mu li {
