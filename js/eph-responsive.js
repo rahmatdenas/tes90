@@ -191,10 +191,14 @@ function updateLabel(expanded) {
       panelMovedOrToggled = true; 
     }
 
-    if (panelMovedOrToggled) {
-      preventNextClick = true;
-      setTimeout(function() { preventNextClick = false; }, 400); 
-    }
+  if (panelMovedOrToggled) {
+    preventNextClick = true;
+    if (preventClickTimer) clearTimeout(preventClickTimer);
+    preventClickTimer = setTimeout(function() {
+      preventNextClick = false;
+      preventClickTimer = null;
+    }, 400);
+  }
 
     panel.classList.remove('eph-dragging');
   }
