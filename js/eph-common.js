@@ -1000,7 +1000,6 @@ function updateNavigationUI(fragment) {
 
   // =======================================================
   // KUNCI PERBAIKAN A: SAPU JAGAT SUBMENU
-  // Selalu paksa tutup submenu setiap kali URL berubah (cegah bug hashtag)
   // =======================================================
   let subMenuAtas = document.getElementById('submenu-atas');
   let btnMenuInduk = document.getElementById('btn-menu-induk');
@@ -1009,7 +1008,6 @@ function updateNavigationUI(fragment) {
   if (btnMenuInduk && btnMenuInduk.parentElement) {
       btnMenuInduk.parentElement.classList.remove('selected', 'active');
   }
-  // =======================================================
 
   // Deteksi apakah yang sedang dibuka adalah Detail Butir yang valid
   let isDetailView = (fragment !== '' && fragment !== 'hasil' && fragment !== 'about' && PrimaryDataIsLoaded && (fragment in Records));
@@ -1023,40 +1021,31 @@ function updateNavigationUI(fragment) {
     
     let currentIndex = currentFilteredRecords.findIndex(r => r === Records[fragment]);
     
-    // KUNCI PERBAIKAN: Jika dipanggil dari URL tapi tersembunyi oleh filter, reset filternya!
-if (currentIndex === -1) {
+    if (currentIndex === -1) {
        let btnAll = document.getElementById('btn-all');
        if (btnAll) btnAll.click();
        currentIndex = currentFilteredRecords.findIndex(r => r === Records[fragment]);
     }
     
-    // ========================================================
-    // LOGIKA BARU: TOMBOL LOOPING (KORSEL)
-    // ========================================================
+    // LOGIKA TOMBOL LOOPING (KORSEL)
     let totalItems = currentFilteredRecords.length;
 
-    // Tombol hanya hidup jika jumlah data lebih dari 1
     if (totalItems > 1 && currentIndex !== -1) {
-      // 1. Tentukan indeks berputar
       let prevIndex = (currentIndex === 0) ? (totalItems - 1) : (currentIndex - 1);
       let nextIndex = (currentIndex === totalItems - 1) ? 0 : (currentIndex + 1);
 
-      // 2. Ambil Q-ID masing-masing
       let prevQid = currentFilteredRecords[prevIndex].id;
       let nextQid = currentFilteredRecords[nextIndex].id;
 
-      // 3. Nyalakan dan pasang tautan tombol '<<'
       btnPrev.href = '#' + prevQid;
       btnPrev.style.opacity = '1';
       btnPrev.style.pointerEvents = 'auto';
 
-      // 4. Nyalakan dan pasang tautan tombol '>>'
       btnNext.href = '#' + nextQid;
       btnNext.style.opacity = '1';
       btnNext.style.pointerEvents = 'auto';
       
     } else {
-      // Matikan kedua tombol HANYA JIKA hasil filter cuma ada 1 data (tidak bisa ke mana-mana)
       btnPrev.removeAttribute('href');
       btnPrev.style.opacity = '0.3';
       btnPrev.style.pointerEvents = 'none';
@@ -1067,15 +1056,21 @@ if (currentIndex === -1) {
     }
 
   } else {
-// KEMBALI KE MODE STANDAR (Beranda | Hasil | Tentang)
+    // KEMBALI KE MODE STANDAR (Beranda | Hasil | Tentang)
     navStandar.style.display = 'flex';
     navDetail.style.display = 'none';
-    // 1. SAPU BERSIH SEMUA STATUS AKTIF TERLEBIH DAHULU
+  }
+
+  // =======================================================
+  // KUNCI PERBAIKAN B: ATUR LAMPU NAVIGASI (DI LUAR IF-ELSE)
+  // =======================================================
+  
+  // 1. Sikat bersih semua status aktif di menu standar maupun detail tanpa pandang bulu
   document.querySelectorAll('#nav-standar > li, #nav-detail > li').forEach(li => {
     li.classList.remove('selected', 'active');
   });
 
-  // 2. NYALAKAN KEMBALI HANYA JIKA HASHTAG-NYA COCOK
+  // 2. Nyalakan kembali hanya jika hashtag di URL benar-benar cocok
   document.querySelectorAll('#nav-standar > li, #nav-detail > li').forEach(li => {
     let link = li.querySelector('a'); 
     if (!link) return;
@@ -1088,7 +1083,6 @@ if (currentIndex === -1) {
       li.classList.add('selected');
     } 
   });
-}
 }
 
 // ============================================================
