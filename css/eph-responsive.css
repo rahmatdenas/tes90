@@ -80,7 +80,7 @@
     -webkit-user-select: none;
     user-select: none;
    background-color: #7d0d0d; 
-background-image: linear-gradient(to top, #9b0d0b, #550303);
+background-image: linear-gradient(to bottom, #9b0d0b, #550303);
   }
 
   #panel-handle:active {
