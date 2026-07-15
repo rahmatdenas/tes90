@@ -718,14 +718,11 @@ function activateMapMarker(qid) {
 
   try {
     Map.closePopup();
-    Map.stop();
+    Map.stop(); // Hentikan animasi apapun yang sedang berjalan
 
-    // =======================================================
-    // +++ BACA LAPORAN DETEKTIF: TERBANG ATAU GESER? +++
-    // =======================================================
-    let pergerakanPeta = isTerbangViaNavigasi ? 'flyTo' : 'setView';
-    let opsiTerbang = isTerbangViaNavigasi ? { duration: 1.5, easeLinearity: 0.25 } : {};
-    // =======================================================
+    // 1. Tangkap laporan dari detektif ke dalam variabel lokal
+    let gunakanTerbang = isTerbangViaNavigasi;
+    let opsiTerbang = { duration: 1.5, easeLinearity: 0.25 };
 
     let countSameLocation = 0;
     currentFilteredRecords.forEach(r => {
@@ -734,9 +731,21 @@ function activateMapMarker(qid) {
       }
     });
 
+    // Fungsi kecil pembantu untuk membuka popup dengan aman
+    const bukaPopupAman = () => {
+      if (window.location.hash !== '#' + qid) return;
+      if (!record.popup.isOpen()) record.mapMarker.openPopup();
+    };
+
+    // =======================================================
+    // LOGIKA PERGERAKAN PETA
+    // =======================================================
     if (countSameLocation > 60) {
-      // +++ Ganti Map.setView menjadi dinamis +++
-      Map[pergerakanPeta]([record.lat, record.lon], TILE_LAYER_MAX_ZOOM, opsiTerbang);
+      if (gunakanTerbang) {
+        Map.flyTo([record.lat, record.lon], TILE_LAYER_MAX_ZOOM, opsiTerbang);
+      } else {
+        Map.setView([record.lat, record.lon], TILE_LAYER_MAX_ZOOM);
+      }
       
       setTimeout(() => {
         if (window.location.hash !== '#' + qid) return;
@@ -748,31 +757,40 @@ function activateMapMarker(qid) {
             if (visibleParent._icon) visibleParent._icon.classList.remove('cluster-efek-denyut');
           }, 4500);
         }
-      }, 350);
-    } else {
+      }, gunakanTerbang ? 1600 : 350); // Jeda tunggu lebih lama jika sedang terbang
+    } 
+    else {
       if (Cluster.hasLayer(record.mapMarker)) {
-        Cluster.zoomToShowLayer(
-          record.mapMarker,
-          function() {
-            if (window.location.hash !== '#' + qid) return;
-            if (!record.popup.isOpen()) record.mapMarker.openPopup();
-          }
-        );
+        
+        if (gunakanTerbang) {
+          // KUNCI PERBAIKAN: Terbang dulu, tunggu mendarat (moveend), baru buka klaster!
+          let zoomTarget = Math.max(Map.getZoom(), 15); // Jaga agar zoom tidak terlalu jauh
+          Map.flyTo([record.lat, record.lon], zoomTarget, opsiTerbang);
+          
+          Map.once('moveend', function() {
+            Cluster.zoomToShowLayer(record.mapMarker, bukaPopupAman);
+          });
+        } else {
+          // Jika diklik dari daftar, gunakan geser biasa bawaan klaster
+          Cluster.zoomToShowLayer(record.mapMarker, bukaPopupAman);
+        }
+
       } else {
-        // +++ Ganti Map.setView menjadi dinamis +++
-        Map[pergerakanPeta]([record.lat, record.lon], Map.getZoom(), opsiTerbang);
-        if (!record.popup.isOpen()) record.mapMarker.openPopup();
+        // Kondisi jika marker tidak sedang di dalam klaster (sudah zoom maksimal)
+        if (gunakanTerbang) {
+          Map.flyTo([record.lat, record.lon], Map.getZoom(), opsiTerbang);
+          Map.once('moveend', bukaPopupAman);
+        } else {
+          Map.setView([record.lat, record.lon], Map.getZoom());
+          bukaPopupAman();
+        }
       }
     }
   } catch (error) {
     console.warn("Interupsi animasi peta dicegat:", error);
   } finally {
-    // =======================================================
-    // +++ RESET STATUS DETEKTIF (SANGAT PENTING) +++
-    // =======================================================
-    // Apapun yang terjadi, kembalikan ke false agar klik daftar 
-    // selanjutnya kembali menggunakan mode geser biasa (setView).
-    isTerbangViaNavigasi = false;
+    // Apapun yang terjadi, kembalikan status detektif ke normal (geser biasa)
+    isTerbangViaNavigasi = false; 
   }
 }
 
