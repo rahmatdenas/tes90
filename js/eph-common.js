@@ -1000,11 +1000,11 @@ function updateNavigationUI(fragment) {
       btnNext.style.pointerEvents = 'auto';
     } else {
       btnPrev.removeAttribute('href');
-      btnPrev.style.opacity = '0.3';
+      btnPrev.style.opacity = '0.1';
       btnPrev.style.pointerEvents = 'none';
 
       btnNext.removeAttribute('href');
-      btnNext.style.opacity = '0.3';
+      btnNext.style.opacity = '0.1';
       btnNext.style.pointerEvents = 'none';
     }
 
@@ -1105,22 +1105,27 @@ let isArrowRightHeld = false;
 window.addEventListener('keydown', function(e) {
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
 
+  // +++ KUNCI PENCEGAHAN LIGHTBOX +++
+  // Jika lightbox sedang terbuka, matikan fungsi panah keyboard!
+  let lightbox = document.getElementById('eph-lightbox');
+  if (lightbox && lightbox.classList.contains('aktif')) return;
+
   if (e.key === 'ArrowLeft') {
-    if (isArrowLeftHeld) return; // Jika sedang ditahan, acuhkan!
+    if (isArrowLeftHeld) return; 
     isArrowLeftHeld = true;
     
     let btnPrev = document.getElementById('btn-prev');
     if (btnPrev && btnPrev.hasAttribute('href') && btnPrev.style.pointerEvents !== 'none') {
-      btnPrev.classList.add('active'); // Nyalakan efek ditekan
+      btnPrev.classList.add('active'); 
     }
   } 
   else if (e.key === 'ArrowRight') {
-    if (isArrowRightHeld) return; // Jika sedang ditahan, acuhkan!
+    if (isArrowRightHeld) return; 
     isArrowRightHeld = true;
     
     let btnNext = document.getElementById('btn-next');
     if (btnNext && btnNext.hasAttribute('href') && btnNext.style.pointerEvents !== 'none') {
-      btnNext.classList.add('active'); // Nyalakan efek ditekan
+      btnNext.classList.add('active'); 
     }
   }
 });
@@ -1129,22 +1134,26 @@ window.addEventListener('keydown', function(e) {
 window.addEventListener('keyup', function(e) {
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
 
+  // +++ KUNCI PENCEGAHAN LIGHTBOX +++
+  let lightbox = document.getElementById('eph-lightbox');
+  if (lightbox && lightbox.classList.contains('aktif')) return;
+
   if (e.key === 'ArrowLeft') {
-    isArrowLeftHeld = false; // Lepas kuncian
+    isArrowLeftHeld = false; 
     
     let btnPrev = document.getElementById('btn-prev');
     if (btnPrev && btnPrev.hasAttribute('href') && btnPrev.style.pointerEvents !== 'none') {
-      btnPrev.classList.remove('active'); // Matikan efek
-      window.location.hash = btnPrev.getAttribute('href'); // EKSEKUSI PINDAH!
+      btnPrev.classList.remove('active'); 
+      window.location.hash = btnPrev.getAttribute('href'); 
     }
   } 
   else if (e.key === 'ArrowRight') {
-    isArrowRightHeld = false; // Lepas kuncian
+    isArrowRightHeld = false; 
     
     let btnNext = document.getElementById('btn-next');
     if (btnNext && btnNext.hasAttribute('href') && btnNext.style.pointerEvents !== 'none') {
-      btnNext.classList.remove('active'); // Matikan efek
-      window.location.hash = btnNext.getAttribute('href'); // EKSEKUSI PINDAH!
+      btnNext.classList.remove('active'); 
+      window.location.hash = btnNext.getAttribute('href'); 
     }
   }
 });
